@@ -1,0 +1,32 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  padding: 50px 40px;
+  background-color: #202020;
+}
+
+.un-order-header-items {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  list-style-type: none;
+}
+
+.logout-button {
+  padding: 8px 15px;
+  background-color: #4f46e5;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  color: #ffffff;
+}
+
+.list-item {
+  font-size: 15px;
+  font-weight: 600;
+  margin-left: 20px;
+  color: #ffffff;
+}

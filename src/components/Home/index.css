@@ -1,0 +1,14 @@
+.home-container {
+  background-color: #000000;
+  min-height: 100vh;
+  color: #ffffff;
+}
+.profile-container {
+  background-image: url('https://assets.ccbp.in/frontend/react-js/profile-bg.png');
+  height: 197px;
+  width: 222px;
+}
+
+.employment-list {
+  list-style-type: none;
+}
