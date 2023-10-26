@@ -1,0 +1,14 @@
+.skills-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill-image {
+  height: 45px;
+  width: 45px;
+}
+
+.skill-name {
+  font-size: 12px;
+}

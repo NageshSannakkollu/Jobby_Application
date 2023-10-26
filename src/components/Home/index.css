@@ -1,14 +1,17 @@
 .home-container {
-  background-color: #000000;
-  min-height: 100vh;
-  color: #ffffff;
-}
-.profile-container {
-  background-image: url('https://assets.ccbp.in/frontend/react-js/profile-bg.png');
-  height: 197px;
-  width: 222px;
+  background-color: #000;
 }
 
-.employment-list {
-  list-style-type: none;
+.home-inside-container {
+  background-image: url('https://assets.ccbp.in/frontend/react-js/home-sm-bg.png');
+  height: 100vh;
+  font-family: 'Roboto';
+  color: #ffffff;
+  padding: 60px 50px;
+}
+
+@media screen and (min-width: 767px) {
+  .home-inside-container {
+    background-image: url('https://assets.ccbp.in/frontend/react-js/home-lg-bg.png');
+  }
 }
