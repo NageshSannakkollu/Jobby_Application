@@ -2,23 +2,25 @@ import './index.css'
 
 const SalaryRangeItem = props => {
   const {salaryDetails, salaryChange} = props
-  const {salaryRangeId, label} = salaryDetails
+  const {label, salaryRangeId} = salaryDetails
 
-  const onChangeSalaryRange = () => {
+  const changeSalaryRange = () => {
     salaryChange(salaryRangeId)
   }
 
   return (
-    <li key={salaryRangeId} className="salary-list-item" value={salaryRangeId}>
+    <li className="employment-item-list">
       <input
         type="radio"
-        id="input-radio"
-        onChange={onChangeSalaryRange}
+        id={salaryRangeId}
+        className="checkbox"
+        onClick={changeSalaryRange}
         value={salaryRangeId}
       />
-      <label htmlFor="input-radio">{label}</label>
+      <label htmlFor={salaryRangeId} value={salaryRangeId}>
+        {label}
+      </label>
     </li>
   )
 }
-
 export default SalaryRangeItem
