@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import Header from '../Header'
 import EmploymentItem from '../EmploymentItem'
 import SalaryRangeItem from '../SalaryRangeItem'
+
 import JobItem from '../JobItem'
 
 import './index.css'
@@ -56,8 +57,8 @@ const apiConstants = {
 
 class Jobs extends Component {
   state = {
-    activeEmployeeType: employmentTypesList[0].employmentTypeId,
-    activeSalary: salaryRangesList[0].salaryRangeId,
+    activeEmployeeType: '',
+    activeSalary: '',
     jobsList: [],
     searchInput: '',
     profileDataList: [],
@@ -65,8 +66,8 @@ class Jobs extends Component {
   }
 
   componentDidMount() {
-    this.getJobs()
     this.getProfileDetails()
+    this.getJobs()
   }
 
   changeInEmploymentType = employmentTypeId => {
@@ -78,7 +79,9 @@ class Jobs extends Component {
   }
 
   getJobs = async () => {
+    this.setState({apiStatus: apiConstants.inProgress})
     const {activeEmployeeType, activeSalary, searchInput} = this.state
+    console.log(activeEmployeeType, activeSalary)
     const jwtToken = Cookies.get('jwt_token')
     const url = `https://apis.ccbp.in/jobs?employment_type=${activeEmployeeType}&minimum_package=${activeSalary}&search=${searchInput}`
     const options = {
@@ -100,7 +103,7 @@ class Jobs extends Component {
         jobDescription: eachData.job_description,
       }))
       console.log(updatedData)
-      this.setState({jobsList: updatedData})
+      this.setState({jobsList: updatedData, apiStatus: apiConstants.success})
     }
   }
 
@@ -136,8 +139,14 @@ class Jobs extends Component {
     }
   }
 
+  onEnterSearchInput = event => {
+    if (event.key === 'Enter') {
+      this.getJobs()
+    }
+  }
+
   onChangeSearchInput = event => {
-    this.setState({searchInput: event.target.value}, this.getJobs)
+    this.setState({searchInput: event.target.value})
   }
 
   reloadProfileDetails = () => {
@@ -150,7 +159,7 @@ class Jobs extends Component {
       <div className="profile-container">
         <img
           src={profileDataList.profileImageUrl}
-          alt={profileDataList.name}
+          alt="profile"
           className="profile-picture"
         />
         <h1 className="profile-name">{profileDataList.name}</h1>
@@ -191,18 +200,87 @@ class Jobs extends Component {
     }
   }
 
-  render() {
-    const {activeEmployeeType, activeSalary, jobsList, searchInput} = this.state
-    console.log(activeEmployeeType, activeSalary)
-    const jobsListLength = jobsList.length
-    console.log(jobsListLength)
+  clickOnRetryButton = () => {
+    this.getJobs()
+  }
 
+  renderNoJobsView = () => (
+    <div className="no-jobs-found-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png"
+        alt="no jobs"
+        className="no-jobs-image"
+      />
+      <h1>No Jobs Found</h1>
+      <p>We could not find any jobs. Try other filters</p>
+    </div>
+  )
+
+  renderJobsSuccessView = () => {
+    const {jobsList} = this.state
+    const jobsListLength = jobsList.length
+
+    return (
+      <div>
+        {jobsListLength > 0 ? (
+          <ul className="list-of-jobs-container">
+            {jobsList.map(eachJob => (
+              <JobItem jobDetails={eachJob} key={eachJob.id} />
+            ))}
+          </ul>
+        ) : (
+          this.renderNoJobsView()
+        )}
+      </div>
+    )
+  }
+
+  renderJobsFailureView = () => (
+    <div className="failure-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+        alt="failure view"
+        className="failure-image"
+      />
+      <h1>Oops! Something Went Wrong</h1>
+      <p>We cannot seem to find the page you looking for</p>
+      <button
+        type="button"
+        className="retry-button"
+        onClick={this.clickOnRetryButton}
+      >
+        Retry
+      </button>
+    </div>
+  )
+
+  renderJobsLoadingView = () => (
+    <div data-testid="loader" className="loading">
+      <Loader type="ThreeDots" color="#ffffff" height={50} width={50} />
+    </div>
+  )
+
+  renderJobsList = () => {
+    const {apiStatus} = this.state
+    switch (apiStatus) {
+      case apiConstants.success:
+        return this.renderJobsSuccessView()
+      case apiConstants.failure:
+        return this.renderJobsFailureView()
+      case apiConstants.inProgress:
+        return this.renderJobsLoadingView()
+      default:
+        return null
+    }
+  }
+
+  render() {
+    const {searchInput} = this.state
     return (
       <div className="jobs-container">
         <Header />
         <div className="jobs-inside-container">
           <div className="profile-employment-type-salary-container">
-            <hr />
             <div className="profile-details-container">
               {this.renderProfileItemData()}
             </div>
@@ -237,6 +315,7 @@ class Jobs extends Component {
                 className="search-input"
                 placeholder="Search"
                 onChange={this.onChangeSearchInput}
+                onKeyDown={this.onEnterSearchInput}
                 value={searchInput}
               />
               <button
@@ -247,26 +326,7 @@ class Jobs extends Component {
                 <BsSearch className="search-icon" />
               </button>
             </div>
-            {jobsListLength > 0 ? (
-              <ul className="list-of-jobs-container">
-                {jobsList.map(eachJob => (
-                  <JobItem jobDetails={eachJob} key={eachJob.id} />
-                ))}
-              </ul>
-            ) : (
-              <div className="failure-container">
-                <img
-                  src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
-                  alt="failure view"
-                  className="failure-image"
-                />
-                <h1>Oops! Something Went Wrong</h1>
-                <p>We cannot seem to find the page you looking for</p>
-                <button type="button" className="retry-button">
-                  Retry
-                </button>
-              </div>
-            )}
+            <div className="list-jobs-container">{this.renderJobsList()}</div>
           </div>
         </div>
       </div>
