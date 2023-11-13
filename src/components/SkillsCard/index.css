@@ -1,14 +1,10 @@
-.skills-list {
+.skills-list-item {
   display: flex;
   align-items: center;
-  justify-content: center;
+  margin: 16px;
 }
-
 .skill-image {
-  height: 45px;
-  width: 45px;
-}
-
-.skill-name {
-  font-size: 12px;
+  height: 35px;
+  width: 35px;
+  margin-right: 10px;
 }
