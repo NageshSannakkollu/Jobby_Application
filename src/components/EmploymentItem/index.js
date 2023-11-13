@@ -4,21 +4,22 @@ const EmploymentItem = props => {
   const {employmentDetails, changeInEmploymentType} = props
   const {label, employmentTypeId} = employmentDetails
 
-  const onChangeEmploymentType = () => {
+  const onClickEmploymentType = () => {
     changeInEmploymentType(employmentTypeId)
   }
-
   return (
-    <li className="employment-type-list" key={employmentTypeId}>
+    <li className="employment-item-list">
       <input
         type="checkbox"
-        id="checkbox-input"
-        onChange={onChangeEmploymentType}
-        value={employmentTypeId}
+        className="checkbox"
+        onClick={onClickEmploymentType}
+        id={label}
+        value={label}
       />
-      <label htmlFor="checkbox-input">{label}</label>
+      <label htmlFor={label} value={label}>
+        {label}
+      </label>
     </li>
   )
 }
-
 export default EmploymentItem
