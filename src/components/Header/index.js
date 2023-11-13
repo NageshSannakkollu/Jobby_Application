@@ -3,32 +3,35 @@ import Cookies from 'js-cookie'
 import './index.css'
 
 const Header = props => {
-  const {history} = props
   const onClickLogout = () => {
     Cookies.remove('jwt_token')
+    const {history} = props
     history.replace('/login')
   }
 
   return (
     <nav className="header-container">
-      <img
-        src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
-        alt="website logo"
-        className="logo-image"
-      />
-      <ul className="un-order-header-items">
-        <Link to="/" className="link-item">
+      <Link to="/">
+        <img
+          src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
+          alt="website logo"
+          className="header-website-logo"
+        />
+      </Link>
+      <ul className="header-list-items">
+        <Link to="/">
           <li className="list-item">Home</li>
         </Link>
-        <Link to="/jobs" className="link-item">
+        <Link to="/jobs">
           <li className="list-item">Jobs</li>
         </Link>
       </ul>
-      <button type="button" className="logout-button" onClick={onClickLogout}>
-        Logout
-      </button>
+      <Link to="/login">
+        <button type="button" className="logout-button" onClick={onClickLogout}>
+          <li> Logout</li>
+        </button>
+      </Link>
     </nav>
   )
 }
-
 export default withRouter(Header)
