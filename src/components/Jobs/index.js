@@ -72,62 +72,6 @@ class Jobs extends Component {
     this.getJobs()
   }
 
-  changeInEmploymentType = employmentTypeId => {
-    const {clickedOnEmploymentType} = this.state
-    this.setState(prevState => ({
-      clickedOnEmploymentType: !prevState.clickedOnEmploymentType,
-    }))
-    if (clickedOnEmploymentType) {
-      this.setState({activeEmployeeType: employmentTypeId}, this.getJobs)
-    } else {
-      this.setState({activeEmployeeType: ''}, this.getJobs)
-    }
-    console.log(clickedOnEmploymentType)
-    console.log(employmentTypeId)
-  }
-
-  salaryChange = salaryRangeId => {
-    const {clickedOnSalaryRangeId} = this.state
-    this.setState(prevState => ({
-      clickedOnSalaryRangeId: !prevState.clickedOnSalaryRangeId,
-    }))
-    if (clickedOnSalaryRangeId) {
-      this.setState({activeSalary: salaryRangeId}, this.getJobs)
-    } else {
-      this.setState({activeSalary: ''}, this.getJobs)
-    }
-  }
-
-  getJobs = async () => {
-    this.setState({apiStatus: apiConstants.inProgress})
-    const {activeEmployeeType, activeSalary, searchInput} = this.state
-    console.log(`EmploymentType:${activeEmployeeType}`)
-    console.log(`Salary Range:${activeSalary}`)
-    const jwtToken = Cookies.get('jwt_token')
-    const url = `https://apis.ccbp.in/jobs?employment_type=${activeEmployeeType}&minimum_package=${activeSalary}&search=${searchInput}`
-    const options = {
-      method: 'GET',
-      headers: {Authorization: `Bearer ${jwtToken}`},
-    }
-
-    const response = await fetch(url, options)
-    if (response.ok === true) {
-      const data = await response.json()
-      const updatedData = data.jobs.map(eachData => ({
-        id: eachData.id,
-        companyLogoUrl: eachData.company_logo_url,
-        location: eachData.location,
-        employmentType: eachData.employment_type,
-        packagePerAnnum: eachData.package_per_annum,
-        rating: eachData.rating,
-        title: eachData.title,
-        jobDescription: eachData.job_description,
-      }))
-      console.log(updatedData)
-      this.setState({jobsList: updatedData, apiStatus: apiConstants.success})
-    }
-  }
-
   getUpdatedProfileData = eachOne => ({
     name: eachOne.name,
     profileImageUrl: eachOne.profile_image_url,
@@ -150,11 +94,66 @@ class Jobs extends Component {
       const fetchedData = this.getUpdatedProfileData(
         profileData.profile_details,
       )
-      console.log(fetchedData)
+
       this.setState({
         profileDataList: fetchedData,
         apiStatus: apiConstants.success,
       })
+    }
+    if (response.status === 404) {
+      this.setState({apiStatus: apiConstants.failure})
+    }
+  }
+
+  changeInEmploymentType = employmentTypeId => {
+    const {clickedOnEmploymentType} = this.state
+    this.setState(prevState => ({
+      clickedOnEmploymentType: !prevState.clickedOnEmploymentType,
+    }))
+    if (clickedOnEmploymentType) {
+      this.setState({activeEmployeeType: employmentTypeId}, this.getJobs)
+    } else {
+      this.setState({activeEmployeeType: ''}, this.getJobs)
+    }
+  }
+
+  salaryChange = salaryRangeId => {
+    const {clickedOnSalaryRangeId} = this.state
+    this.setState(prevState => ({
+      clickedOnSalaryRangeId: !prevState.clickedOnSalaryRangeId,
+    }))
+    if (clickedOnSalaryRangeId) {
+      this.setState({activeSalary: salaryRangeId}, this.getJobs)
+    } else {
+      this.setState({activeSalary: ''}, this.getJobs)
+    }
+  }
+
+  getJobs = async () => {
+    this.setState({apiStatus: apiConstants.inProgress})
+    const {activeEmployeeType, activeSalary, searchInput} = this.state
+
+    const jwtToken = Cookies.get('jwt_token')
+    const url = `https://apis.ccbp.in/jobs?employment_type=${activeEmployeeType}&minimum_package=${activeSalary}&search=${searchInput}`
+    const options = {
+      method: 'GET',
+      headers: {Authorization: `Bearer ${jwtToken}`},
+    }
+    const response = await fetch(url, options)
+    if (response.ok === true) {
+      const data = await response.json()
+      const updatedData = data.jobs.map(eachData => ({
+        id: eachData.id,
+        companyLogoUrl: eachData.company_logo_url,
+        location: eachData.location,
+        employmentType: eachData.employment_type,
+        packagePerAnnum: eachData.package_per_annum,
+        rating: eachData.rating,
+        title: eachData.title,
+        jobDescription: eachData.job_description,
+      }))
+
+      this.setState({jobsList: updatedData, apiStatus: apiConstants.success})
     } else {
       this.setState({apiStatus: apiConstants.failure})
     }
@@ -164,6 +163,10 @@ class Jobs extends Component {
     if (event.key === 'Enter') {
       this.getJobs()
     }
+  }
+
+  clickOnSearchIcon = () => {
+    this.getJobs()
   }
 
   onChangeSearchInput = event => {
@@ -202,7 +205,7 @@ class Jobs extends Component {
   )
 
   renderLoadingView = () => (
-    <div className="loader" data-testid="loader">
+    <div className="profile-loader" data-testid="loader">
       <Loader type="ThreeDots" color="#ffffff" height={40} width={40} />
     </div>
   )
@@ -237,25 +240,6 @@ class Jobs extends Component {
     </div>
   )
 
-  renderJobsSuccessView = () => {
-    const {jobsList} = this.state
-    const jobsListLength = jobsList.length
-
-    return (
-      <div>
-        {jobsListLength > 0 ? (
-          <ul className="list-of-jobs-container">
-            {jobsList.map(eachJob => (
-              <JobItem jobDetails={eachJob} key={eachJob.id} />
-            ))}
-          </ul>
-        ) : (
-          this.renderNoJobsView()
-        )}
-      </div>
-    )
-  }
-
   renderJobsFailureView = () => (
     <div className="failure-container">
       <img
@@ -274,6 +258,37 @@ class Jobs extends Component {
       </button>
     </div>
   )
+
+  renderJobsSuccessView = () => {
+    const {jobsList} = this.state
+    const jobsListLength = jobsList.length
+    const shouldShowJobsList = jobsListLength > 0
+
+    return shouldShowJobsList ? (
+      <ul className="list-of-jobs-container">
+        {jobsList.map(eachJob => (
+          <JobItem jobDetails={eachJob} key={eachJob.id} />
+        ))}
+      </ul>
+    ) : (
+      <div className="failure-container">
+        <img
+          src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+          alt="failure view"
+          className="failure-image"
+        />
+        <h1>Oops! Something Went Wrong</h1>
+        <p>We cannot seem to find the page you are looking for</p>
+        <button
+          type="button"
+          className="retry-button"
+          onClick={this.clickOnRetryButton}
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
 
   renderJobsLoadingView = () => (
     <div data-testid="loader" className="loading">
@@ -345,7 +360,10 @@ class Jobs extends Component {
                 className="search-button"
                 data-testid="searchButton"
               >
-                <BsSearch className="search-icon" />
+                <BsSearch
+                  className="search-icon"
+                  onClick={this.clickOnSearchIcon}
+                />
               </button>
             </div>
             <div className="list-jobs-container">{this.renderJobsList()}</div>
