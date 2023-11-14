@@ -63,6 +63,8 @@ class Jobs extends Component {
     searchInput: '',
     profileDataList: [],
     apiStatus: apiConstants.initial,
+    clickedOnEmploymentType: true,
+    clickedOnSalaryRangeId: true,
   }
 
   componentDidMount() {
@@ -71,17 +73,36 @@ class Jobs extends Component {
   }
 
   changeInEmploymentType = employmentTypeId => {
-    this.setState({activeEmployeeType: employmentTypeId}, this.getJobs)
+    const {clickedOnEmploymentType} = this.state
+    this.setState(prevState => ({
+      clickedOnEmploymentType: !prevState.clickedOnEmploymentType,
+    }))
+    if (clickedOnEmploymentType) {
+      this.setState({activeEmployeeType: employmentTypeId}, this.getJobs)
+    } else {
+      this.setState({activeEmployeeType: ''}, this.getJobs)
+    }
+    console.log(clickedOnEmploymentType)
+    console.log(employmentTypeId)
   }
 
   salaryChange = salaryRangeId => {
-    this.setState({activeSalary: salaryRangeId}, this.getJobs)
+    const {clickedOnSalaryRangeId} = this.state
+    this.setState(prevState => ({
+      clickedOnSalaryRangeId: !prevState.clickedOnSalaryRangeId,
+    }))
+    if (clickedOnSalaryRangeId) {
+      this.setState({activeSalary: salaryRangeId}, this.getJobs)
+    } else {
+      this.setState({activeSalary: ''}, this.getJobs)
+    }
   }
 
   getJobs = async () => {
     this.setState({apiStatus: apiConstants.inProgress})
     const {activeEmployeeType, activeSalary, searchInput} = this.state
-    console.log(activeEmployeeType, activeSalary)
+    console.log(`EmploymentType:${activeEmployeeType}`)
+    console.log(`Salary Range:${activeSalary}`)
     const jwtToken = Cookies.get('jwt_token')
     const url = `https://apis.ccbp.in/jobs?employment_type=${activeEmployeeType}&minimum_package=${activeSalary}&search=${searchInput}`
     const options = {
@@ -276,6 +297,7 @@ class Jobs extends Component {
 
   render() {
     const {searchInput} = this.state
+
     return (
       <div className="jobs-container">
         <Header />
