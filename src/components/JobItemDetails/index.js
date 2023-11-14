@@ -92,8 +92,7 @@ class JobItemDetails extends Component {
         similarJobsList: similarJobs,
         apiStatus: apiStatusConstants.success,
       })
-    }
-    if (response.status === 401) {
+    } else {
       this.setState({apiStatus: apiStatusConstants.failure})
     }
   }
@@ -165,7 +164,7 @@ class JobItemDetails extends Component {
           <h3>Skills</h3>
           <ul className="skills-card">
             {skillsList.map(eachSkill => (
-              <SkillsCard skillsDetails={eachSkill} key={eachSkill.id} />
+              <SkillsCard skillsDetails={eachSkill} key={eachSkill.name} />
             ))}
           </ul>
           <h3>Life At Company</h3>
