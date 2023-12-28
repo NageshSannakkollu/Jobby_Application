@@ -30,3 +30,10 @@
   margin-left: 20px;
   color: #ffffff;
 }
+.header-list-items {
+  list-style-type: none;
+  display: flex;
+}
+.logout-list {
+  list-style-type: none;
+}

@@ -5,7 +5,7 @@ import {BsBriefcaseFill, BsBoxArrowUpRight} from 'react-icons/bs'
 import Cookies from 'js-cookie'
 import Header from '../Header'
 import SkillsCard from '../SkillsCard'
-import SimilarJobsCard from '../SimilarJobsCard'
+import SimilarJobsCard from '../SimilarJobsItem'
 
 import './index.css'
 

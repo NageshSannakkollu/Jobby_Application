@@ -11,13 +11,17 @@ const Header = props => {
 
   return (
     <nav className="header-container">
-      <Link to="/">
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
-          alt="website logo"
-          className="header-website-logo"
-        />
-      </Link>
+      <ul className="header-list-items">
+        <Link to="/">
+          <li>
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
+              alt="website logo"
+              className="header-website-logo"
+            />
+          </li>
+        </Link>
+      </ul>
       <ul className="header-list-items">
         <Link to="/">
           <li className="list-item">Home</li>
@@ -28,7 +32,7 @@ const Header = props => {
       </ul>
       <Link to="/login">
         <button type="button" className="logout-button" onClick={onClickLogout}>
-          <li> Logout</li>
+          Logout
         </button>
       </Link>
     </nav>

@@ -57,14 +57,17 @@ const apiConstants = {
 
 class Jobs extends Component {
   state = {
-    activeEmployeeType: '',
     activeSalary: '',
     jobsList: [],
     searchInput: '',
     profileDataList: [],
     apiStatus: apiConstants.initial,
-    clickedOnEmploymentType: true,
     clickedOnSalaryRangeId: true,
+    selectedEmployeeIdList: [],
+    clickedOnFulltime: true,
+    clickedOnPartTime: true,
+    clickedOnFreelance: true,
+    clickedOnInternship: true,
   }
 
   componentDidMount() {
@@ -89,31 +92,19 @@ class Jobs extends Component {
       method: 'GET',
     }
     const response = await fetch(url, options)
+    console.log(response)
     if (response.ok) {
       const profileData = await response.json()
       const fetchedData = this.getUpdatedProfileData(
         profileData.profile_details,
       )
-
       this.setState({
         profileDataList: fetchedData,
         apiStatus: apiConstants.success,
       })
-    }
-    if (response.status === 404) {
-      this.setState({apiStatus: apiConstants.failure})
-    }
-  }
-
-  changeInEmploymentType = employmentTypeId => {
-    const {clickedOnEmploymentType} = this.state
-    this.setState(prevState => ({
-      clickedOnEmploymentType: !prevState.clickedOnEmploymentType,
-    }))
-    if (clickedOnEmploymentType) {
-      this.setState({activeEmployeeType: employmentTypeId}, this.getJobs)
     } else {
-      this.setState({activeEmployeeType: ''}, this.getJobs)
+      this.setState({apiStatus: apiConstants.failure})
+      console.log(response.status)
     }
   }
 
@@ -129,17 +120,106 @@ class Jobs extends Component {
     }
   }
 
+  changeInEmploymentType = employeeId => {
+    const {
+      clickedOnFulltime,
+      clickedOnPartTime,
+      clickedOnFreelance,
+      clickedOnInternship,
+      selectedEmployeeIdList,
+    } = this.state
+
+    let finalList = ''
+
+    if (employeeId === 'FULLTIME') {
+      this.setState(prevState => ({
+        clickedOnFulltime: !prevState.clickedOnFulltime,
+      }))
+      if (clickedOnFulltime) {
+        console.log(clickedOnFulltime)
+        this.setState(prevState => ({
+          selectedEmployeeIdList: [
+            ...prevState.selectedEmployeeIdList,
+            employeeId,
+          ],
+        }))
+        this.setState(selectedEmployeeIdList, this.getJobs)
+      } else {
+        finalList = selectedEmployeeIdList.filter(
+          eachEmployee => eachEmployee !== employeeId,
+        )
+        this.setState({selectedEmployeeIdList: finalList}, this.getJobs)
+      }
+    } else if (employeeId === 'PARTTIME') {
+      this.setState(prevState => ({
+        clickedOnPartTime: !prevState.clickedOnPartTime,
+      }))
+      if (clickedOnPartTime) {
+        this.setState(prevState => ({
+          selectedEmployeeIdList: [
+            ...prevState.selectedEmployeeIdList,
+            employeeId,
+          ],
+        }))
+        this.setState(selectedEmployeeIdList, this.getJobs)
+      } else {
+        finalList = selectedEmployeeIdList.filter(
+          eachEmployee => eachEmployee !== employeeId,
+        )
+        this.setState({selectedEmployeeIdList: finalList}, this.getJobs)
+      }
+    } else if (employeeId === 'FREELANCE') {
+      this.setState(prevState => ({
+        clickedOnFreelance: !prevState.clickedOnFreelance,
+      }))
+      if (clickedOnFreelance) {
+        this.setState(prevState => ({
+          selectedEmployeeIdList: [
+            ...prevState.selectedEmployeeIdList,
+            employeeId,
+          ],
+        }))
+        this.setState(selectedEmployeeIdList, this.getJobs)
+      } else {
+        finalList = selectedEmployeeIdList.filter(
+          eachEmployee => eachEmployee !== employeeId,
+        )
+        this.setState({selectedEmployeeIdList: finalList}, this.getJobs)
+      }
+    } else if (employeeId === 'INTERNSHIP') {
+      this.setState(prevState => ({
+        clickedOnInternship: !prevState.clickedOnInternship,
+      }))
+      if (clickedOnInternship) {
+        this.setState(prevState => ({
+          selectedEmployeeIdList: [
+            ...prevState.selectedEmployeeIdList,
+            employeeId,
+          ],
+        }))
+        this.setState(selectedEmployeeIdList, this.getJobs)
+      } else {
+        finalList = selectedEmployeeIdList.filter(
+          eachEmployee => eachEmployee !== employeeId,
+        )
+        this.setState({selectedEmployeeIdList: finalList}, this.getJobs)
+      }
+    }
+  }
+
   getJobs = async () => {
     this.setState({apiStatus: apiConstants.inProgress})
-    const {activeEmployeeType, activeSalary, searchInput} = this.state
-
+    const {selectedEmployeeIdList, activeSalary, searchInput} = this.state
+    const activeEmployeeIds = selectedEmployeeIdList.join()
+    console.log(activeEmployeeIds)
     const jwtToken = Cookies.get('jwt_token')
-    const url = `https://apis.ccbp.in/jobs?employment_type=${activeEmployeeType}&minimum_package=${activeSalary}&search=${searchInput}`
+    const url = `https://apis.ccbp.in/jobs?employment_type=${activeEmployeeIds}&minimum_package=${activeSalary}&search=${searchInput}`
     const options = {
       method: 'GET',
       headers: {Authorization: `Bearer ${jwtToken}`},
     }
     const response = await fetch(url, options)
+    console.log(response)
     if (response.ok === true) {
       const data = await response.json()
       const updatedData = data.jobs.map(eachData => ({
@@ -212,6 +292,7 @@ class Jobs extends Component {
 
   renderProfileItemData = () => {
     const {apiStatus} = this.state
+    console.log(`Profile Status:${apiStatus}`)
     switch (apiStatus) {
       case apiConstants.success:
         return this.renderProfileSuccessView()
